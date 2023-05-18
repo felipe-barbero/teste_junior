@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body id="app">
+    <nav class="navbar bg-primary" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Cadastro de empresas</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="pt-3 mb-3">
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addModal" @click="clearDetails()">Adicionar Empresa</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Nome</th>
+              <th scope="col">Rua</th>
+              <th scope="col">Número</th>
+              <th scope="col">Bairro</th>
+              <th scope="col">Cidade</th>
+              <th scope="col">Estado</th>
+              <th scope="col" colspan="2">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="company in companies" :key="company.id">
+              <th scope="row">{{company.id}}</th>
+              <td>{{company.name}}</td>
+              <td>{{company.address.street}}</td>
+              <td>{{company.address.street_number}}</td>
+              <td>{{company.address.neighborhood}}</td>
+              <td>{{company.address.city}}</td>
+              <td>{{company.address.state}}</td>
+              <td><button type="button" title="Editar" @click="getDetails(company)" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal"><span class="material-icons">edit</span></button></td>
+              <td><button type="button" title="Excluir" @click="getDetails(company)" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"><span class="material-icons">delete</span></button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="alert alert-warning" role="alert" v-if="companies.length == 0">
+          Nenhuma empresa encontrada!
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Editar-->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="addModalLabel">Adicionar Empresa</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="row mb-2" >
+                <div class="col">
+                  <label for="name_company" class="form-label">Nome</label>
+                  <input type="text" class="form-control" id="name_company" v-model="companyDetails.name">
+                </div>
+              </div>
+
+              <div class="row mb-2">
+                <div class="col">
+                  <label for="street_company" class="form-label">Rua</label>
+                  <input type="text" class="form-control" id="street_company" v-model="companyDetails.address.street">
+                </div>
+                <div class="col">
+                  <label for="street_number_company" class="form-label">Número</label>
+                  <input type="text" class="form-control" id="street_number_company" v-model="companyDetails.address.street_number">
+                </div>
+              </div>
+
+              <div class="row mb-2">
+                <div class="col">
+                  <label for="neighborhood_company" class="form-label">Bairro</label>
+                  <input type="text" class="form-control" id="neighborhood_company" v-model="companyDetails.address.neighborhood">
+                </div>
+                <div class="col">
+                  <label for="city_company" class="form-label">Cidade</label>
+                  <input type="text" class="form-control" id="city_company" v-model="companyDetails.address.city">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col">
+                  <label for="state_company" class="form-label">Estado</label>
+                  <input type="text" class="form-control" id="state_company" v-model="companyDetails.address.state">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            <button type="button" class="btn btn-primary" @click="addCompany(companyDetails)">Adicionar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Editar-->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="editModalLabel">Editar Empresa</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="row mb-2" >
+                <div class="col">
+                  <label for="name_company" class="form-label">Nome</label>
+                  <input type="text" class="form-control" id="name_company" v-model="companyDetails.name">
+                </div>
+              </div>
+
+              <div class="row mb-2">
+                <div class="col">
+                  <label for="street_company" class="form-label">Rua</label>
+                  <input type="text" class="form-control" id="street_company" v-model="companyDetails.address.street">
+                </div>
+                <div class="col">
+                  <label for="street_number_company" class="form-label">Número</label>
+                  <input type="text" class="form-control" id="street_number_company" v-model="companyDetails.address.street_number">
+                </div>
+              </div>
+
+              <div class="row mb-2">
+                <div class="col">
+                  <label for="neighborhood_company" class="form-label">Bairro</label>
+                  <input type="text" class="form-control" id="neighborhood_company" v-model="companyDetails.address.neighborhood">
+                </div>
+                <div class="col">
+                  <label for="city_company" class="form-label">Cidade</label>
+                  <input type="text" class="form-control" id="city_company" v-model="companyDetails.address.city">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col">
+                  <label for="state_company" class="form-label">Estado</label>
+                  <input type="text" class="form-control" id="state_company" v-model="companyDetails.address.state">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            <button type="button" class="btn btn-primary" @click="editCompany(companyDetails)">Editar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Excluir -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="deleteModalLabel">Excluir Empresa</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Você tem certeza que deseja excluir essa empresa?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            <button type="button" class="btn btn-primary" @click="deleteCompany(companyDetails)">Excluir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <!-- Toast Adicionado -->
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="addToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Sistema</strong>
+        <small>Agora</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Fechar"></button>
+      </div>
+      <div class="toast-body">
+        Empresa adicionada com sucesso!
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Editado -->
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="editToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Sistema</strong>
+        <small>Agora</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Fechar"></button>
+      </div>
+      <div class="toast-body">
+        Empresa editada com sucesso!
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Excluido -->
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="deleteToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Sistema</strong>
+        <small>Agora</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Fechar"></button>
+      </div>
+      <div class="toast-body">
+        Empresa excluída com sucesso!
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script>
+    const { createApp } = Vue
+  
+    createApp({
+      data() {
+        return {
+          companies: [],
+          companyDetails: {
+            address: {}
+          }
+        }
+      },
+      async mounted() {
+        this.getAll();
+      },
+      methods: {
+        async getAll() {
+          const response = await fetch("http://localhost:8080/company/getAll");
+          const data = await response.json();
+          this.companies = data.companies;
+        },
+        getDetails(company) {
+          this.companyDetails = company;
+          console.log(company);
+          console.log(this.companyDetails);
+        },
+        clearDetails(){
+          this.companyDetails = { address: {} };
+        },
+        async addCompany(company){
+          const response = await fetch(`http://localhost:8080/company/create`, { method: 'post',  headers: {"Content-type": "application/json; charset=UTF-8"}, body: JSON.stringify(company)});
+          const data = await response.json();
+          if(data.success === true) {
+            $('#addToast').toast('show');
+            $('#addModal').modal('hide');
+            this.getAll();
+          }
+        },
+        async editCompany(company){
+          const response = await fetch(`http://localhost:8080/company/edit/${company.id}`, { method: 'post',  headers: {"Content-type": "application/json; charset=UTF-8"}, body: JSON.stringify(company)});
+          const data = await response.json();
+          if(data.success === true) {
+            $('#editToast').toast('show');
+            $('#editModal').modal('hide');
+            this.getAll();
+          }
+        },
+        async deleteCompany(company){
+          const response = await fetch(`http://localhost:8080/company/eliminate/${company.id}`);
+          const data = await response.json();
+          if(data.success === true) {
+            $('#deleteToast').toast('show');
+            $('#deleteModal').modal('hide');
+            this.getAll();
+          }
+        }
+      }
+    }).mount('#app')
+  </script>
+  <script
+  src="https://code.jquery.com/jquery-3.7.0.min.js"
+  integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
+  crossorigin="anonymous"></script>
+
+  <!-- Estilo da página -->
+  <style>
+    body {
+      background-color: #ccc;
+    }
+    .container {
+      background-color: #fff;
+    }
+  </style>
+</html>
